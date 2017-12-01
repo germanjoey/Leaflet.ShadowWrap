@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Leaflet.ShadowWrap Example</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <link type="text/css" rel="stylesheet" href="lib/leaflet.css" />
+        <link type="text/css" rel="stylesheet" href="lib/leaflet.draw.css" />
+        <script type="text/javascript" src="lib/leaflet.js"></script>
+        <script type="text/javascript" src="lib/leaflet.draw-custom.js"></script>
+        
+        <script type="text/javascript" src="../dist/leaflet.shadowwrap.js"></script>
+        <script type="text/javascript" src="../dist/leaflet.shadowwrap.draw.js"></script>
+    </head>
+    
+    <body>
+        <div id="map" style="height:400px; width: 500px;"></div>
+        
+        <script>
+        /* globals L:false */
+
+        L.ShadowWrap.initialize();
+        
+        var map = L.map('map', {
+            worldCopyJump: true
+        }).setView([10.8, -155.7], 2);
+
+        //  OSM tiles
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18
+        }).addTo(map);
+        
+        var drawnItems = L.featureGroup([]).addTo(map);
+        
+        var drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: drawnItems,
+                poly : {
+                    allowIntersection : false
+                }
+            },
+            draw: {
+                polygon : {
+                    allowIntersection: false
+                },
+            }
+        });
+        
+        map.addControl(drawControl);
+        
+        // set this to a value greater than zero to allow shapes
+        // that are *close* to the dateline but do not cross it,
+        // like markers, to also shadow, so that they won't disappear
+        // when the user pans cross it
+        L.ShadowWrap.minimumWrapDistance = 10;
+        
+        // add a dateline (note that the dateline itself doesn't wrap
+        // because of noShadow:true, so we need to make two of them, one
+        // for each side of the dateline !)
+        new L.Rectangle([[-88, 179.75], [88, 179.99]], {
+            'noShadow': true,
+            'color': 'black',
+            'opacity': 0.3
+        }).addTo(map);
+        new L.Rectangle([[-88, -179.75], [88, -179.99]], {
+            'noShadow': true,
+            'color': 'black',
+            'opacity': 0.3
+        }).addTo(map);
+        
+        // add a few default shapes; the user can draw more
+        var nz_marker = L.marker([-36.5, 173]);
+        nz_marker.bindPopup('-36.5, 173');
+        
+        var us_marker = L.marker([36.5, -119]);
+        us_marker.bindPopup('36.5, -119');
+        
+        var r1 = new L.Rectangle([[-29.5, -139], [36.5, 153]]);
+        var r2 = new L.Rectangle([[-29.5, -10], [35.5, 10]]);
+        var c = new L.Circle([-29, -177], 2000000);
+        
+        var initialLayers = [nz_marker, us_marker, r1, r2, c];
+        L.ShadowWrap.hookLeafletDraw(drawControl, drawnItems, [], initialLayers);
+        
+        </script>
+        <p>
+        This second demo shows how Leaflet.ShadowWrap fixes things. The rectangle wraps across correctly across the dateline, and you can pan across it without shapes mysteriously disappearing. You can now draw over the dateline without your shapes disappearing, and edit without things going haywire.
+        </p>
+        <p>
+        Compare to: <a href="https://germanjoey.github.io/leaflet.shadowwrap/demo1.html">demo 1</a>.
+        </p>
+    </body>
+</html>

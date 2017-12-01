@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Leaflet.ShadowWrap Example</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <link type="text/css" rel="stylesheet" href="lib/leaflet.css" />
+        <link type="text/css" rel="stylesheet" href="lib/leaflet.draw.css" />
+        <script type="text/javascript" src="lib/leaflet.js"></script>
+        <script type="text/javascript" src="lib/leaflet.draw-custom.js"></script>
+    </head>
+    
+    <body>
+        <div id="map" style="height:400px; width: 500px;"></div>
+        
+        <script>
+        /* globals L:false */
+        
+        // NOTE:
+        // in this demo, Leaflet.ShadowWrap is not used and thus shapes wrap incorrectly
+        // and disappear across the international dateline.
+        // see demo2 for the correct behaivor
+
+        var map = L.map('map', {
+            worldCopyJump: true
+        }).setView([10.8, -155.7], 2);
+
+        //  OSM tiles
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18
+        }).addTo(map);
+        
+        var drawnItems = L.featureGroup([]).addTo(map);
+        
+        var drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: drawnItems,
+                poly : {
+                    allowIntersection : false
+                }
+            },
+            draw: {
+                polygon : {
+                    allowIntersection: false
+                },
+            }
+        });
+        
+        map.addControl(drawControl);
+        
+        new L.Rectangle([[-88, 179.75], [88, 179.99]], {
+            'color': 'black',
+            'opacity': 0.3
+        }).addTo(map);
+        new L.Rectangle([[-88, -179.75], [88, -179.99]], {
+            'color': 'black',
+            'opacity': 0.3
+        }).addTo(map);
+        
+        // add a few default shapes to be manipulable by leaflet draw
+        var aus_marker = L.marker([-29.5, -173]);
+        aus_marker.bindPopup('-29.5, 173');
+        
+        var us_marker = L.marker([35.5, -119]);
+        us_marker.bindPopup('35.5, -123');
+        
+        var r = new L.Rectangle([[-29.5, -139], [35.5, 153]]);
+        var c = new L.Circle([-29, -177], 2000000);
+        
+        var initialLayers = [aus_marker, us_marker, r, c];
+        
+        for (var i=0; i<initialLayers.length; i++) {
+            drawnItems.addLayer(initialLayers[i]);
+        }
+        
+        map.on(L.Draw.Event.CREATED, function (e) {
+            drawnItems.addLayer(e.layer);
+        });
+        
+        </script>
+        <p>
+        The first demo shows the situation without Leaflet.ShadowWrap. For example, notice how the rectangle wraps across the world long-wise instead of displaying compactly across the dateline. Or pan to the left and watch the shapes disappear. Or try drawing over the dateline. Or try to draw on one side of the dateline, and then resize/move the shape over it in edit mode. 
+        </p>
+        <p>
+        Compare to: <a href="https://germanjoey.github.io/leaflet.shadowwrap/demo2.html">demo 2</a>.
+        </p>
+    </body>
+</html>
