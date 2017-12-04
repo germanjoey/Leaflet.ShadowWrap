@@ -34,8 +34,8 @@ Demo
 
 The first demo shows the situation without Leaflet.ShadowWrap. For example, pan to the left and watch the shapes disappear. Or try drawing over the dateline. Also notice how the rectangle wraps across the world long-wise instead of displaying compactly across the dateline.
 
-_Demo 1: https://germanjoey.github.io/leaflet.shadowwrap/demos/demo2.html
+Demo 1: https://germanjoey.github.io/leaflet.shadowwrap/demos/demo1.html
 
 This second demo shows Leaflet.ShadoWrap fixing the above.
 
-_Demo 2: https://germanjoey.github.io/leaflet.shadowwrap/demos/demo2.html
+Demo 2: https://germanjoey.github.io/leaflet.shadowwrap/demos/demo2.html
